@@ -273,21 +273,25 @@ class Music(commands.Cog):
     @app_commands.command(name="play", description="Play a song or Spotify link 🎵")
     @app_commands.describe(query="Song name, YouTube URL, or Spotify link")
     async def play(self, interaction: discord.Interaction, query: str):
-        if not interaction.user.voice:
-            return await interaction.response.send_message(
-                embed=discord.Embed(description="✦ Join a voice channel first! 🎙️", color=PINK_ERROR),
-                ephemeral=True
-            )
+        try:
+            if not interaction.user.voice:
+                return await interaction.response.send_message(
+                    embed=discord.Embed(description="✦ Join a voice channel first! 🎙️", color=PINK_ERROR),
+                    ephemeral=True
+                )
 
-        await interaction.response.defer()
-        state = self.get_state(interaction.guild_id)
-        vc    = interaction.guild.voice_client
+            await interaction.response.defer()
+            state = self.get_state(interaction.guild_id)
+            vc    = interaction.guild.voice_client
 
-        # Connect to voice
-        if not vc:
-            vc = await interaction.user.voice.channel.connect()
-        elif vc.channel != interaction.user.voice.channel:
-            await vc.move_to(interaction.user.voice.channel)
+            print(f"[PLAY] query={query} user={interaction.user} voice={interaction.user.voice.channel}")
+
+            # Connect to voice
+            if not vc:
+                print("[PLAY] Connecting to voice channel...")
+                vc = await interaction.user.voice.channel.connect()
+            elif vc.channel != interaction.user.voice.channel:
+                await vc.move_to(interaction.user.voice.channel)
 
         # Resolve Spotify
         if self.is_spotify_url(query):
@@ -364,6 +368,16 @@ class Music(commands.Cog):
                 embed=discord.Embed(description=f"{SPARKLE} Starting playback! 🌸", color=PINK_SUCCESS),
                 ephemeral=True
             )
+        except Exception as e:
+            print(f"[PLAY ERROR] {type(e).__name__}: {e}")
+            import traceback
+            traceback.print_exc()
+            try:
+                await interaction.followup.send(
+                    embed=discord.Embed(description=f"✦ Something went wrong: {e}", color=0xFF6B8A)
+                )
+            except Exception:
+                pass
 
     # ── /queue ─────────────────────────────────────────────────────────────────
     @app_commands.command(name="queue", description="View the current queue 🎶")
