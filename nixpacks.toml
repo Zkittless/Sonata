@@ -1,12 +1,10 @@
 [phases.setup]
-nixPkgs = ["ffmpeg", "python311", "libsodium", "python311Packages.pynacl"]
+nixPkgs = ["ffmpeg", "python311", "libsodium", "python311Packages.pynacl", "python311Packages.pip"]
 
 [phases.install]
 cmds = [
-  "python3 -m venv --copies /opt/venv",
-  ". /opt/venv/bin/activate && pip install -r requirements.txt",
-  ". /opt/venv/bin/activate && pip install --upgrade PyNaCl"
+  "python3 -m pip install -r requirements.txt"
 ]
 
 [phases.start]
-cmd = ". /opt/venv/bin/activate && python3 bot.py"
+cmd = "python3 bot.py"
