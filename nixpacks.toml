@@ -1,2 +1,11 @@
 [phases.setup]
-nixPkgs = ["ffpmeg"]
+nixPkgs = ["ffmpeg", "python311", "libsodium"]
+
+[phases.install]
+cmds = [
+  "python3 -m venv --copies /opt/venv",
+  ". /opt/venv/bin/activate && pip install -r requirements.txt"
+]
+
+[phases.start]
+cmd = "python3 bot.py"
