@@ -4,7 +4,8 @@ nixPkgs = ["ffmpeg", "python311", "libsodium"]
 [phases.install]
 cmds = [
   "python3 -m venv --copies /opt/venv",
-  ". /opt/venv/bin/activate && pip install -r requirements.txt"
+  ". /opt/venv/bin/activate && pip install -r requirements.txt",
+  ". /opt/venv/bin/activate && pip install PyNaCl --no-binary PyNaCl"
 ]
 
 [phases.start]
